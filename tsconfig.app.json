@@ -10,5 +10,14 @@
   ],
   "include": [
     "src/**/*.d.ts"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "allowedCommonJsDependencies": [
+      "sweetalert2",
+      "jspdf-autotable",
+      "bcryptjs",
+      "html2canvas",
+      "dompurify"
+    ]
+  }
 }
