@@ -1,29 +1,31 @@
 <div [ngClass]="getColorClass()">
   <div class="form-modal">
-    <h2 mat-dialog-title>Asignar Estudiantes</h2>
+    <h2 mat-dialog-title>Asignar Estudiante</h2>
 
     <mat-dialog-content>
-      <form>
-
-
-        <mat-form-field appearance="fill">
-          <mat-label>Fecha de Inscripción</mat-label>
-          <mat-datepicker #picker></mat-datepicker>
-          <input matInput [matDatepicker]="picker" [(ngModel)]="fechaInscripcion" name="fechaInscripcion" required />
-          <mat-datepicker-toggle matSuffix [for]="picker" disabled></mat-datepicker-toggle>
-        </mat-form-field>
-        <mat-list>
-          <mat-list-item *ngFor="let estudiante of estudiantes">
-            <mat-checkbox [(ngModel)]="estudiante.seleccionado" (change)="onCheckboxChange(estudiante)"
-              [ngModelOptions]="{standalone: true}">
-              {{ estudiante.nombre }} {{ estudiante.apellido }}
-            </mat-checkbox>
-          </mat-list-item>
-        </mat-list>
 
 
 
-      </form>
+
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Estudiante</mat-label>
+        <input
+          type="text"
+          placeholder="Selecciona un Estudiante"
+          aria-label="Estudiante"
+          matInput
+          [formControl]="myControl"
+          [matAutocomplete]="auto"
+        />
+        <mat-autocomplete #auto="matAutocomplete">
+          @for (nombreProfesor of filteredEstudiantes | async; track nombreProfesor) {
+            <mat-option [value]="nombreProfesor">{{nombreProfesor}}</mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+      
+
     </mat-dialog-content>
 
     <mat-dialog-actions>

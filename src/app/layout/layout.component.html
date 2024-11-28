@@ -1,3 +1,4 @@
+
 <div [ngClass]="getColorClass()">
   <header>
     <button (click)="toggleSidebar()" class="menu-button">&#9776;</button>
@@ -92,5 +93,4 @@
   <main class="main-content" [ngClass]="{'sidebar-open': isSidebarOpen}">
     <router-outlet></router-outlet>
   </main>
-
 </div>

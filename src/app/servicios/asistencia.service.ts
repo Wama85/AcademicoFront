@@ -75,21 +75,21 @@ export class AsistenciaService {
   }
 
   guardarAsistencia(asistencia:Asistencia):Observable<number>{
-    return this.http.post<Asistencia>("http://localhost:3000/asistencia", asistencia)
+    return this.http.post<Asistencia>("https://academicoapi.onrender.com/asistencia", asistencia)
     .pipe(
       map((response: Asistencia) => response.id_asistencia|| -1)
     );
   }
   guardarAsistencias(asistencia:Asistencia[]):Observable<Asistencia[]>{
-    return this.http.post<Asistencia[]>("http://localhost:3000/asistencia/all", asistencia)
+    return this.http.post<Asistencia[]>("https://academicoapi.onrender.com/asistencia/all", asistencia)
   }
 
   actualizarAsistencia(id:number,asistencia:any):Observable<Asistencia>{
-    return this.http.patch<Asistencia>(`http://localhost:3000/asistencia/${id}`, asistencia)
+    return this.http.patch<Asistencia>(`https://academicoapi.onrender.com/asistencia/${id}`, asistencia)
   }
 
   eliminarAsistencia(id:number):Observable<Asistencia>{
-    return this.http.delete<Asistencia>(`http://localhost:3000/asistencia/${id}`)
+    return this.http.delete<Asistencia>(`https://academicoapi.onrender.com/asistencia/${id}`)
   }
    // Método para obtener asistencias por estudiante y materia
    getAsistenciasPorEstudianteYMateria(idEstudiante: number, idMateria: number): Observable<Asistencia[]> {

@@ -43,6 +43,7 @@ export class DetalleNotasEstudiantesComponent implements OnInit {
   idDicta: number = 0;
   idEstudiante: number = 0;
   route: ActivatedRoute = inject(ActivatedRoute);
+  anio:number=new Date().getFullYear();
   constructor(
     private colorService: SelectionColorService,
     private detalleNotasService: DetalleNotasService,
@@ -51,6 +52,8 @@ export class DetalleNotasEstudiantesComponent implements OnInit {
   ) {
     this.idDicta = +this.route.snapshot.params['id_dicta'];
     this.idEstudiante = +this.route.snapshot.params['id_estudiante'];
+    this.anio = +this.route.snapshot.params['anio'];
+
     console.log(this.idDicta)
     console.log(this.idEstudiante)
   }
@@ -81,7 +84,7 @@ export class DetalleNotasEstudiantesComponent implements OnInit {
     const notasEstudianteMateria = this.notas.filter(
       (nota) =>
         nota.estudiante?.id_estudiante === idEstudiante &&
-        nota.materiaAsignada?.id_dicta === idMateria
+        nota.materiaAsignada?.id_dicta === idMateria && nota.anio==this.anio
     );
     console.log(idEstudiante,idMateria)
 
@@ -105,14 +108,14 @@ export class DetalleNotasEstudiantesComponent implements OnInit {
     });
 
     this.notasPorTrimestre = notasAgrupadasPorTrimestre;
-    console.log(
-      'Notas por trimestre del estudiante',
-      idEstudiante,
-      'en la materia',
-      idMateria,
-      ':',
-      this.notasPorTrimestre
-    );
+    // console.log(
+    //   'Notas por trimestre del estudiante',
+    //   idEstudiante,
+    //   'en la materia',
+    //   idMateria,
+    //   ':',
+    //   this.notasPorTrimestre
+    // );
   }
 
   obtenerNotas(): void {
@@ -120,7 +123,7 @@ export class DetalleNotasEstudiantesComponent implements OnInit {
       (notas: Nota[]) => {
         this.notas = notas;
         console.log("notas",notas)
-        this.filtrarNotasEstudianteMateria(this.idEstudiante, this.idDicta); // Filtra para id_estudiante = 1 y id_dicta = 130
+        this.filtrarNotasEstudianteMateria(this.idEstudiante, this.idDicta); 
         this.isLoading=false;
         this.isLoading=false;
       },

@@ -10,6 +10,12 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import {MensajeService} from '../mensaje/mensaje.component'
 import { SelectionColorService } from '../../servicios/selection-color.service';
+import {OnInit} from '@angular/core';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
+import {AsyncPipe} from '@angular/common';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 @Component({
   selector: 'app-formulario-asignar-materia-docente',
   standalone: true,
@@ -21,6 +27,12 @@ import { SelectionColorService } from '../../servicios/selection-color.service';
     MatInputModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    ReactiveFormsModule,
+    AsyncPipe,
 
   ],
   templateUrl: './formulario-asignar-materia-docente.component.html',
@@ -30,7 +42,11 @@ export class FormularioAsignarMateriaDocenteComponent {
   selectedColor: string = '';
   profesor?: Profesor;
   profesores: Profesor[];
+  filteredProfesores?: Observable<string[]>;
+
   fecha:Date;
+
+  myControl = new FormControl('');
   
   constructor(
     private colorService: SelectionColorService,
@@ -39,13 +55,32 @@ export class FormularioAsignarMateriaDocenteComponent {
   ) {
     this.profesores= data.profesores || '';
     this.fecha = data.fecha || new Date();
+    console.log(this.fecha)
   }
 
   ngOnInit() {
+    this.filteredProfesores = this.myControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || '')),
+    );
+
+
     this.colorService.currentColor$.subscribe(color => {
       this.selectedColor = color; // Actualiza el color recibido
       console.log('Color recibido en Login:', this.selectedColor);
     });
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    let profs= this.profesores.filter(profe => profe.nombre.toLowerCase().includes(filterValue));
+    if(value){
+      this.profesor=profs[0];
+    }
+
+    return profs.map(
+      profe =>profe.nombre
+    );
   }
 
   getColorClass(): string {
@@ -64,6 +99,7 @@ export class FormularioAsignarMateriaDocenteComponent {
       this.mensajeService.mostrarMensajeError("Error!!","Debe asignar un profesor para la materia");
       return;
     }
+    // console.log(this.profesor)
     this.dialogRef.close({
       profesor: this.profesor,
       fecha: this.fecha,

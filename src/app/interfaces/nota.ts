@@ -4,6 +4,7 @@ export interface Nota {
   trimestre: number;
   tipo: string;
   nota: number;
+  anio:number;
   materiaAsignada: {
     id_dicta: number;
     fecha: Date;

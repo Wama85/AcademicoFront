@@ -1,66 +1,90 @@
-import { Component, Inject } from '@angular/core';
+import { Component ,Inject} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatListModule } from '@angular/material/list';
-import { Estudiante } from '../../interfaces/estudiante';
-import { MensajeService } from '../mensaje/mensaje.component';
-import { EstudiantesAdminService } from '../../servicios/estudiantes-admin.service';
-import { MatNativeDateModule } from '@angular/material/core';
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { MatButtonModule } from '@angular/material/button'; 
+import {Estudiante} from '../../interfaces/estudiante';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatNativeDateModule } from '@angular/material/core';
+import {MensajeService} from '../mensaje/mensaje.component'
 import { SelectionColorService } from '../../servicios/selection-color.service';
-
-
-// Tipo extendido con la propiedad 'seleccionado'
-interface EstudianteConSeleccion extends Estudiante {
-  seleccionado: boolean;
-}
+import {OnInit} from '@angular/core';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
+import {AsyncPipe} from '@angular/common';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-formulario-asignar-estudiantes',
   standalone: true,
   imports: [
-    CommonModule,
-    FormsModule,
-    MatDialogModule,
+    CommonModule, 
+    FormsModule, 
+    MatDialogModule, 
     MatButtonModule,
-    MatNativeDateModule,
-    MatCheckboxModule,
-    MatListModule,
     MatFormFieldModule,
     MatInputModule,
     MatDatepickerModule,
+    MatNativeDateModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    ReactiveFormsModule,
+    AsyncPipe,
   ],
   templateUrl: './formulario-asignar-materia-estudiante.component.html',
   styleUrls: ['./formulario-asignar-materia-estudiante.component.sass'],
 })
 export class FormularioAsignarMateriaEstudianteComponent {
   selectedColor: string = '';
-  estudiantes: EstudianteConSeleccion[] = []; // Lista extendida de estudiantes
-  seleccionados: Estudiante[] = []; // Lista de seleccionados con el formato original
-  fechaInscripcion: Date = new Date(); // Definir la propiedad 'fechaInscripcion'
+  estudiante?: Estudiante;
+  estudiantees: Estudiante[];
+  filteredEstudiantes?: Observable<string[]>;
 
+  fecha:Date;
+
+  myControl = new FormControl('');
+  
   constructor(
     private colorService: SelectionColorService,
     public dialogRef: MatDialogRef<FormularioAsignarMateriaEstudianteComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    private readonly mensajeService: MensajeService
+    @Inject(MAT_DIALOG_DATA) public data: any,private readonly mensajeService:MensajeService
   ) {
-    this.cargarEstudiantes(data.estudiantes || []);
+    this.estudiantees= data.estudiantes || '';
+    this.fecha = data.fecha || new Date();
+    console.log(this.fecha)
   }
 
   ngOnInit() {
+    this.filteredEstudiantes = this.myControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || '')),
+    );
+
+
     this.colorService.currentColor$.subscribe(color => {
       this.selectedColor = color; // Actualiza el color recibido
       console.log('Color recibido en Login:', this.selectedColor);
     });
+  }
+  getNombreCompleto(estudiante:Estudiante){
+      return estudiante.nombre+" "+estudiante.apellido;
+  }
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    let ests= this.estudiantees.filter(est => this.getNombreCompleto(est).toLowerCase().includes(filterValue));
+    if(value){
+      console.log(value)
+      this.estudiante=ests[0];
+    }
+
+    return ests.map(
+      est =>this.getNombreCompleto(est)
+    );
   }
 
   getColorClass(): string {
@@ -74,48 +98,20 @@ export class FormularioAsignarMateriaEstudianteComponent {
     }
   }
   
-  // Cargar estudiantes con la propiedad 'seleccionado'
-  cargarEstudiantes(estudiantes: Estudiante[]) {
-    console.log('Estudiantes cargados:', estudiantes);
-
-    this.estudiantes = estudiantes.map(est => ({
-      ...est,
-      seleccionado: false, // Se agrega la propiedad 'seleccionado'
-    }));
-  }
-
   onAdd() {
-    // Filtra solo los seleccionados
-    this.seleccionados = this.estudiantes
-      .filter(est => est.seleccionado) 
-      .map(est => ({
-        id_estudiante: est.id_estudiante,
-        nombre: est.nombre,
-        apellido: est.apellido,
-        email: est.email,
-        foto: est.foto,
-        paralelo: est.paralelo,
-      })); 
-
-      console.log(this.seleccionados)
-    // Validar selección
-    
-
-    // Validar que se haya seleccionado una fecha de inscripción
-
-
+    if(!this.estudiante){
+      this.mensajeService.mostrarMensajeError("Error!!","Debe asignar un estudiante para la materia");
+      return;
+    }
     this.dialogRef.close({
-      estudiantesSeleccionados: this.seleccionados,
-      fechaInscripcion: this.fechaInscripcion,
+      estudiante: this.estudiante,
+      fecha: this.fecha,
     });
-
-  }
-
-  onCheckboxChange(estudiante: EstudianteConSeleccion) {
-
+    this.mensajeService.mostrarMensajeExito("Exito!!","Se asigno al estudiante con exito!!")
   }
 
   onCancel() {
     this.dialogRef.close();
   }
+
 }

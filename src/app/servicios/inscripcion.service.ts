@@ -23,11 +23,22 @@ export class InscripcionService {
 
   }
 
+  obtenerInscripcionesDeMateriaAsignada(id_dicta:number):Observable<Estudiante[]>{
+    return this.http.get<Estudiante[]>(`${this.urlApi}/inscripciones/estudiantes/${id_dicta}`)
+
+  }
+
     // Asignar estudiantes a una materia
   asignarEstudiantes(
     materiaEstudiantes: { id_dicta: number; id_estudiante: number; fecha_inscripcion: string; anio: number }[]
   ): Observable<any> {
       return this.http.post(`${this.urlApi}`, materiaEstudiantes);
+  }
+
+
+  desAsignarEstudiante(id:number
+  ): Observable<any> {
+      return this.http.delete(`${this.urlApi}/${id}`);
   }
 
 }

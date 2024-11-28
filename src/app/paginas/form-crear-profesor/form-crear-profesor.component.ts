@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { ProfesorService } from '../../servicios/profesor.service';
 import { updateMetadata } from '@angular/fire/storage';
 import { SelectionColorService } from '../../servicios/selection-color.service';
+import * as bcrypt from 'bcryptjs'
 
 @Component({
   selector: 'app-form-editar-profesor',
@@ -27,6 +28,10 @@ export class FormCrearProfesorComponent {
   selectedColor: string = '';
   profesor: Profesor;
   profesores: Profesor[] = [];
+  plainPassword: string = 'password123'; // Contraseña sin hashear por defecto
+  editando = false;
+
+
 
 
   constructor(
@@ -47,6 +52,9 @@ export class FormCrearProfesorComponent {
       this.selectedColor = color; // Actualiza el color recibido
       console.log('Color recibido en Login:', this.selectedColor);
     });
+    if (!this.profesor.password) {
+      this.plainPassword = 'password123';
+    }
   }
 
   getColorClass(): string {
@@ -59,30 +67,21 @@ export class FormCrearProfesorComponent {
         return 'color-azul';
     }
   }
-  
-  idProfesorExiste(id: number): boolean {
-    return this.profesores.some((profesor) => profesor.id_profesor === id);
+  async generateDefaultPassword(): Promise<string> {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(this.plainPassword, salt);
+    console.log('Contraseña hasheada:', hashedPassword);
+    return hashedPassword;
   }
-
-  guardar() {
+  async guardar() {
+    const hashedPassword = await this.generateDefaultPassword(); // Hashear la contraseña
     const profesorData = {
       id_profesor: this.profesor.id_profesor,
       nombre: this.profesor.nombre,
       apellido: this.profesor.apellido,
       email: this.profesor.email,
+      password: hashedPassword
     };
-
-    if (this.idProfesorExiste(this.profesor.id_profesor)) {
-      this.profesorService.updateProfesor(this.profesor.id_profesor, profesorData).subscribe({
-        next: (updatedProfesor) => {
-          console.log('Profesor actualizado:', updatedProfesor);
-          this.dialogRef.close(updatedProfesor);
-        },
-        error: (error) => {
-          console.error('Error al actualizar el profesor:', error);
-        },
-      });
-    } else {
       this.profesorService.addProfesor(profesorData).subscribe({
         next: (newProfesor) => {
           console.log('Profesor agregado:', newProfesor);
@@ -92,10 +91,12 @@ export class FormCrearProfesorComponent {
           console.error('Error al agregar el profesor:', error);
         },
       });
-    }
+    
   }
 
   cancelar() {
     this.dialogRef.close();
   }
+  
+
 }

@@ -1,5 +1,8 @@
 <div [ngClass]="getColorClass()">
   <h2><b>Mis Asistencias:</b></h2>
+  <select (change)="onYearChange($event)">
+    <option *ngFor="let year of anios" [value]="year">{{ year }}</option>
+  </select>
 
   <div class="buscador">
     <input type="text" class="text-input" placeholder="Escribe tu búsqueda..." [(ngModel)]="busqueda"

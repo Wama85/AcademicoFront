@@ -34,14 +34,14 @@ export class EstudiantesAdminService {
   }
 
   actualizarEstudiante(id: number, estudiante: Partial<Estudiante>): Observable<Estudiante> {
-    return this.http.patch<Estudiante>(`http://localhost:3000/auth/update/estudiante/${id}`, estudiante).pipe(
+    return this.http.patch<Estudiante>(`https://academicoapi.onrender.com/auth/update/estudiante/${id}`, estudiante).pipe(
       catchError(this.handleError)
     );
   }
 
 
   addEstudiante(estudiante: Estudiante): Observable<Estudiante> {
-    return this.http.post<Estudiante>('http://localhost:3000/auth/register/estudiante', estudiante).pipe(
+    return this.http.post<Estudiante>('https://academicoapi.onrender.com/auth/register/estudiante', estudiante).pipe(
     catchError(this.handleError)
     );
   }

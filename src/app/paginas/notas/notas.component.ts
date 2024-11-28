@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { NotaService } from '../../servicios/nota.service';
 import { Nota } from '../../interfaces/nota';
 import { MateriaAsignadaDocente } from '../../interfaces/materia-asignada-docente';
@@ -21,13 +19,7 @@ import * as XLSX from 'xlsx';
 @Component({
   selector: 'app-notas',
   standalone: true,
-  imports: [CommonModule,
-    HttpClientModule,
-    RouterModule,
-    MatProgressSpinnerModule,
-    MatButtonModule,
-    MatIconModule,MatSelectModule,
-    MatFormFieldModule],
+  imports: [CommonModule, HttpClientModule, RouterModule,MatProgressSpinnerModule,MatButtonModule,MatIconModule],
   templateUrl: './notas.component.html',
   styleUrls: ['./notas.component.sass']
 })
@@ -43,6 +35,7 @@ export class NotasComponent implements OnInit {
   filteredProfesores: MateriaAsignadaDocente[] = [];
   filteredEstudiantes: Estudiante[] = [];
   nombresMaterias: { [id_materia: number]: string } = {};
+  anios:string[]=[];
 
   constructor(private colorService: SelectionColorService,private readonly notaService: NotaService, private readonly authService:AuthService) {}
 
@@ -52,10 +45,25 @@ export class NotasComponent implements OnInit {
     this.obtenerProfesores();
     this.obtenerEstudiantes();
     this.obtenerNotas();
+ 
     this.colorService.currentColor$.subscribe(color => {
       this.selectedColor = color; // Actualiza el color recibido
       console.log('Color recibido en Login:', this.selectedColor);
     });
+  }
+
+  obtenerAniosNotas(){
+    this.notaService.obtenerTodosLosAnios().subscribe(
+      (response)=>{
+        console.log("notasPorMateria",this.notasPorMateria)
+        console.log("anios",response)
+        this.anios=response;
+      }
+      ,
+      (error)=>{
+        console.log(error)
+      }
+    )
   }
 
   getColorClass(): string {
@@ -100,7 +108,6 @@ export class NotasComponent implements OnInit {
 
   onYearChange(event: Event): void {
     this.isLoading=true;
-    this.isLoading=true;
     const selectElement = event.target as HTMLSelectElement;
     this.selectedYear = +selectElement.value;
     this.obtenerNotas(); // Actualizar notas al cambiar el año
@@ -110,7 +117,9 @@ export class NotasComponent implements OnInit {
     this.notaService.obtenerNotasPorAno(this.selectedYear).subscribe(
       (notas: Nota[]) => {
         this.notas = notas;
+        console.log(notas)
         this.agruparNotasPorMateria();
+        this.obtenerAniosNotas();
         this.isLoading=false;
         this.isLoading=false;
       },
@@ -137,7 +146,7 @@ export class NotasComponent implements OnInit {
       const trimestre = nota.trimestre;
       const tipo = nota.tipo; // "hacer", "decidir", "saber", "ser"
       const notaValue = nota.nota;
-      console.log(nota)
+      // console.log(nota)
       if (nota.estudiante.id_estudiante==this.authService.getUserId()){
 
 
@@ -187,6 +196,7 @@ export class NotasComponent implements OnInit {
     });
 
     return tiposConNotas > 0 ? sumaPromedios / tiposConNotas : 0;
+
   }
 
   calcularPromedioGeneral(id_dicta: number): number {
@@ -202,7 +212,10 @@ export class NotasComponent implements OnInit {
       }
     });
 
-    return trimestresConNotas > 0 ? sumaPromedios / trimestresConNotas : 0; // Retorna el promedio general
+    // return trimestresConNotas > 0 ? sumaPromedios / trimestresConNotas : 0; // Retorna el promedio general
+    return trimestresConNotas > 0 ? sumaPromedios / 3 : 0; // Retorna el promedio general
+
+
   }
 
   determinarEstado(promedio: number): string {

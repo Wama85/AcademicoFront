@@ -20,10 +20,30 @@ export class VerMateriasDocenteComponent implements OnInit {
   servicioMateriasProfesor:MateriasProfesorService=inject(MateriasProfesorService);
   authService: AuthService = inject(AuthService);
   materias:MateriaAsignadaDocente[]=[];
+  materiasFiltradas:MateriaAsignadaDocente[]=[];
+
   
   constructor(
     private colorService: SelectionColorService
   ) {}
+  anios:string[]=[];
+  selectedYear: number = 2024;
+  filtrarMateriasAnio(){
+    this.materias=this.materiasFiltradas.filter((materia:MateriaAsignadaDocente)=>
+      materia.anio===this.selectedYear
+    )
+  }
+  filtrarAnios(){
+    this.anios=[...new Set(this.materiasFiltradas.map((materia)=>materia.anio.toString()))]
+    console.log(this.anios)
+  }
+  
+  onYearChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    this.selectedYear = +selectElement.value;
+    this.filtrarMateriasAnio()
+  }
+
 
   ngOnInit(): void {
     this.colorService.currentColor$.subscribe(color => {
@@ -39,6 +59,9 @@ export class VerMateriasDocenteComponent implements OnInit {
           this.materias = response.filter(materia => materia.profesor?.id_profesor === idProfesor);
           console.log('id_dicta profesor:', idProfesor)
           console.log('Materias asignadas:', this.materias,);
+          this.materiasFiltradas=this.materias;
+          this.filtrarMateriasAnio();
+          this.filtrarAnios();
         },
         error => {
           console.error('Error en la petición GET:', error);

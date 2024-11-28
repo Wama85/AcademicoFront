@@ -32,4 +32,9 @@ obtenerEstudiantesMateriaAsignada(id:number):Observable<Estudiante[]>{
 agregarMateriaAsignada(materiaAsignada:MateriaAsignadaDocente):Observable<MateriaAsignadaDocente>{
   return this.http.post<MateriaAsignadaDocente>(`${this.urlApi}`,materiaAsignada)
 }
+
+eliminarMateriaAsignada(id_dicta:number):any{
+  return this.http.delete<any>(`${this.urlApi}/${id_dicta}`)
+}
+
 }

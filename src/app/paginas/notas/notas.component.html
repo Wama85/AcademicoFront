@@ -1,36 +1,10 @@
-
-<style>
-  .loader-container {
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   height: 100vh;
- }
- .mat-raised-button.mat-success{
-  background-color: rgb(12, 134, 53);
-
- }
- select{
-  padding: 10px;
-  font-size: 18px;
-  font-weight: bold;
-  border-radius: 5px;
- }
- </style>
-<div>
-  <h1>Notas</h1>
-
-
 <div [ngClass]="getColorClass()">
   <h2><b>Notas:</b></h2>
-
   <select (change)="onYearChange($event)">
-    <option *ngFor="let year of [2024, 2023, 2022, 2021]" [value]="year">{{ year }}</option>
+    <option *ngFor="let year of anios" [value]="year">{{ year }}</option>
   </select>
 
-
   <button mat-raised-button color="primary" (click)="exportarPDF()" class="button-export">
-
     <mat-icon>picture_as_pdf</mat-icon> Exportar a PDF
   </button>
   <button  mat-raised-button color="success"  (click)="exportarExcel()" class="button-export">
@@ -40,7 +14,7 @@
   <div *ngIf="isLoading" class="loader-container">
     <mat-spinner></mat-spinner>
   </div>
-
+  
   <div *ngIf="!isLoading">
   <h2><b>Notas del Estudiante:</b></h2>
   <table>
@@ -63,7 +37,7 @@
         <td>{{ calcularPromedioGlobalPorTrimestre(+id_dicta.key, 3) | number: '2.2-2' }}</td>
         <td>{{ calcularPromedioGeneral(+id_dicta.key) | number: '1.2-2' }}</td>
         <td>{{ determinarEstado(calcularPromedioGeneral(+id_dicta.key)) }}</td> <!-- Cambiar el promedio para el estado -->
-        <td><button [routerLink]="['/home/detalle-notas-estudiantes',id_dicta.key,obtenerIdEstudiante()]">Mas detalle</button></td> <!-- Usar método para manejar el clic -->
+        <td><button [routerLink]="['/home/detalle-notas-estudiantes',id_dicta.key,obtenerIdEstudiante(),selectedYear]">Mas detalle</button></td> <!-- Usar método para manejar el clic -->
       </tr>
     </tbody>
   </table>

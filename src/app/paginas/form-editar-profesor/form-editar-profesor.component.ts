@@ -9,6 +9,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { ProfesorService } from '../../servicios/profesor.service';
 import { updateMetadata } from '@angular/fire/storage';
 import { SelectionColorService } from '../../servicios/selection-color.service';
+import * as bcrypt from 'bcryptjs'
+
 
 @Component({
   selector: 'app-form-editar-profesor',
@@ -27,6 +29,8 @@ export class FormEditarProfesorComponent {
   selectedColor: string = '';
   profesor: Profesor;
   profesores: Profesor[] = [];
+  plainPassword: string = ''; 
+
 
 
   constructor(
@@ -40,6 +44,8 @@ export class FormEditarProfesorComponent {
       next: (profesores) => (this.profesores = profesores),
       error: (error) => console.error('Error al obtener los profesores:', error),
     });
+     this.plainPassword = '';
+    
   }
 
   ngOnInit() {
@@ -64,15 +70,21 @@ export class FormEditarProfesorComponent {
     return this.profesores.some((profesor) => profesor.id_profesor === id);
   }
 
-  guardar() {
+  async  guardar() {
+    let updatedPassword = this.profesor.password;
+     if (this.plainPassword.trim()) {
+      const salt = await bcrypt.genSalt(10);
+      updatedPassword = await bcrypt.hash(this.plainPassword.trim(), salt);
+    }
     const profesorData = {
       id_profesor: this.profesor.id_profesor,
       nombre: this.profesor.nombre,
       apellido: this.profesor.apellido,
       email: this.profesor.email,
+      password: updatedPassword
     };
 
-    if (this.idProfesorExiste(this.profesor.id_profesor)) {
+   
       this.profesorService.updateProfesor(this.profesor.id_profesor, profesorData).subscribe({
         next: (updatedProfesor) => {
           console.log('Profesor actualizado:', updatedProfesor);
@@ -82,17 +94,8 @@ export class FormEditarProfesorComponent {
           console.error('Error al actualizar el profesor:', error);
         },
       });
-    } else {
-      this.profesorService.addProfesor(profesorData).subscribe({
-        next: (newProfesor) => {
-          console.log('Profesor agregado:', newProfesor);
-          this.dialogRef.close(newProfesor);
-        },
-        error: (error) => {
-          console.error('Error al agregar el profesor:', error);
-        },
-      });
-    }
+    
+     
   }
 
   cancelar() {

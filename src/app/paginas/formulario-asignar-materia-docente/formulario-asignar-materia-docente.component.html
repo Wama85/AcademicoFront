@@ -5,21 +5,27 @@
     <mat-dialog-content>
 
 
-      <mat-form-field appearance="fill">
-        <mat-label>Fecha</mat-label>
-        <mat-datepicker #picker></mat-datepicker>
-        <input matInput [(ngModel)]="fecha" [matDatepicker]="picker" />
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      </mat-form-field>
 
-      <mat-form-field appearance="fill">
+
+
+      <mat-form-field class="example-full-width">
         <mat-label>Profesor</mat-label>
-        <select matNativeControl [(ngModel)]="profesor">
-          <option *ngFor="let profesor of profesores" [ngValue]="profesor">
-            {{ profesor.nombre }}
-          </option>
-        </select>
+        <input
+          type="text"
+          placeholder="Selecciona un profesor"
+          aria-label="Profesor"
+          matInput
+          [formControl]="myControl"
+          [matAutocomplete]="auto"
+        />
+        <mat-autocomplete #auto="matAutocomplete">
+          @for (nombreProfesor of filteredProfesores | async; track nombreProfesor) {
+            <mat-option [value]="nombreProfesor">{{nombreProfesor}}</mat-option>
+          }
+        </mat-autocomplete>
       </mat-form-field>
+      
+
     </mat-dialog-content>
 
     <mat-dialog-actions>

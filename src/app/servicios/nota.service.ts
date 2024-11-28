@@ -31,6 +31,9 @@ export class NotaService {
     return this.http.get<Nota[]>(`${this.apiUrl}/nota`);
   }
 
+  obtenerTodosLosAnios(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/nota/years`);
+  }
 
   obtenerNotasPorAno(selectedYear: number): Observable<Nota[]> {
     return this.http.get<Nota[]>(`${this.apiUrl}/nota`).pipe(
@@ -42,10 +45,10 @@ export class NotaService {
         notas
           .map((nota: Nota) => ({
             ...nota,
-            fecha: new Date(nota.fecha), // Convierte la cadena de fecha a un objeto Date
+            fecha: nota.fecha, // Convierte la cadena de fecha a un objeto Date
             materiaAsignada: {
               ...nota.materiaAsignada,
-              fecha: new Date(nota.materiaAsignada.fecha) // Convierte también la fecha de materiaAsignada
+              fecha: nota.materiaAsignada.fecha // Convierte también la fecha de materiaAsignada
             }
           }))
           .filter((nota: Nota) => new Date(nota.fecha).getFullYear() === selectedYear) // Filtra las notas por año

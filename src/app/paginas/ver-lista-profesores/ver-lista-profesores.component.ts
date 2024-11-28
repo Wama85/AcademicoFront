@@ -119,6 +119,20 @@ export class VerListaProfesoresComponent implements OnInit {
       }
     });
   }
+  eliminarProfesor(id: number): void {
+    console.log(`Eliminar profesor con ID: ${id}`);
+    if (confirm('¿Estás seguro de que deseas eliminar este profesor?')) {
+      this.profesorService.deleteProfesor(id).subscribe({
+        next: () => {
+          console.log('Profesor eliminado con exito.');
+          this.getProfesores();
+        },
+        error: (error) => {
+          console.error('Error al eliminar el profesor:', error);
+        },
+      });
+    }
+  }
   
   
 }

@@ -20,17 +20,18 @@
        <div>
         <b>Paralelo: {{materia?.paralelo?.paralelo}}</b>
         </div>
-        <div>
-            <b>Profesor: {{materia.profesorAsignado?.nombre || "No Asignado"}}</b>
-        </div>
+       
         
         <div>
-            <button  class="materia-nombre" (click)="asignarProfesor(materia)"><b>Asignar Profesor</b></button>
+            <button  class="materia-nombre"
+            [routerLink]="['/home/asignar-materia-docente', materia.id_materia]"
+             ><b>Asignar Profesor</b></button>
         </div>
         <div>
           <button
           class="materia-nombre"
-          (click)="asignarEstudiante(materia)"
+          [routerLink]="['/home/asignar-materia-estudiante', materia.id_materia]"
+         
         >
           <b>Agregar Estudiantes</b>
         </button>        </div>

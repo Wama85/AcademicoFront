@@ -48,6 +48,7 @@ export class DetalleNotasComponent implements OnInit {
   idEstudiante: number = 0;
   route: ActivatedRoute = inject(ActivatedRoute);
   form: FormGroup;
+  anio:number=2024;
   constructor(
     private colorService: SelectionColorService,
     private fb: FormBuilder,
@@ -59,6 +60,7 @@ export class DetalleNotasComponent implements OnInit {
   ) {
     this.idDicta = +this.route.snapshot.params['id_dicta'];
     this.idEstudiante = +this.route.snapshot.params['id_estudiante'];
+    // this.anio = +this.route.snapshot.params['anio'];
     this.form = this.fb.group({
       ser: [0],
       saber: [0],
@@ -89,10 +91,12 @@ export class DetalleNotasComponent implements OnInit {
   }
   
   filtrarNotasEstudianteMateria(idEstudiante: number, idMateria: number): void {
+    // console.log("anio",this.anio)
     const notasEstudianteMateria = this.notas.filter(
       (nota) =>
         nota.estudiante?.id_estudiante === idEstudiante &&
-        nota.materiaAsignada?.id_dicta === idMateria
+        nota.materiaAsignada?.id_dicta === idMateria 
+        // && nota.anio==this.anio
     );
 
     const notasAgrupadasPorTrimestre: {

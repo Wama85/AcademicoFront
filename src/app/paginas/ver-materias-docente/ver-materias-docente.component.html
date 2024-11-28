@@ -1,5 +1,8 @@
 <div [ngClass]="getColorClass()">
   <h2><b>Mis materias:</b></h2>
+  <select (change)="onYearChange($event)">
+    <option *ngFor="let year of anios" [value]="year">{{ year }}</option>
+  </select>
   <div class="card-container">
     @for (materiaAsignada of this.materias; track materiaAsignada.id_dicta) {
     <div class="materia-card">
