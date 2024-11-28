@@ -1,0 +1,11 @@
+<h2>Materias Asignadas</h2>
+<div *NgIf="data">
+  <p><strong>Estudiante:</strong> {{ data.id_estudiante }} </p>
+  
+  <h3>Materias:</h3>
+  <ul>
+    <li *NgFor="let materia of data.materiaAsignada">
+      {{ materia.materia.nombre }}
+    </li>
+  </ul>
+</div>
